@@ -1,2 +1,3 @@
 # SoilTool
-A calculator for determining carbon sequestration affinity based on basalt concentration in soil along with mineral deposition and the porosity of the soil
+A calculator for determining the carbon sequestration affinity for a hectare of soil based on basalt concentration along with mineral deposition, top soil height and total porosity
+
