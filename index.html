@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soil Calculation Tool</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body class="bg-gray-100 font-sans">
+    <div class="min-h-screen flex items-center justify-center">
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+            <h2 class="text-xl font-bold mb-4">Soil Calculation Tool</h2>
+
+            <div class="mb-4">
+                <label for="soilMinerals" class="block text-sm font-medium text-gray-700">Soil Minerals:</label>
+                <input type="number" id="soilMinerals" value="0.53" step="0.01" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+            </div>
+
+            <div class="mb-4">
+                <label for="soilCarbon" class="block text-sm font-medium text-gray-700">Soil Carbon:</label>
+                <input type="number" id="soilCarbon" value="0.02" step="0.01" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+            </div>
+
+            <div class="mb-4">
+                <label for="effectivePorosity" class="block text-sm font-medium text-gray-700">Effective Porosity:</label>
+                <input type="number" id="effectivePorosity" value="0.2" step="0.01" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+            </div>
+
+            <div class="mb-4">
+                <label for="basaltAmended" class="block text-sm font-medium text-gray-700">Basalt Amended (tons):</label>
+                <input type="number" id="basaltAmended" value="100" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+            </div>
+
+            <div class="mb-4">
+                <label for="heightTopsoil" class="block text-sm font-medium text-gray-700">Height of Topsoil Layer (m):</label>
+                <input type="number" id="heightTopsoil" value="0.25" step="0.01" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+            </div>
+
+            <h3 class="text-lg font-semibold">Calculated Values</h3>
+            <div class="mt-2">Air and Blind Pores: <span id="airBlindPores" class="font-medium"></span></div>
+            <div>Volume of Soil/ha: <span id="volumeSoil" class="font-medium"></span></div>
+            <div>Liters of Pore Water per ha: <span id="litersPoreWater" class="font-medium"></span></div>
+            <div>Basalt per Vol of Soil: <span id="basaltPerVol" class="font-medium"></span></div>
+            <div>Concentration of Basalt: <span id="concentrationBasalt" class="font-medium"></span></div>
+        </div>
+    </div>
+
+    <script>
+        // Step 1:
+        $(document).ready(function () {
+            function calculateValues() {
+                const soilMinerals = parseFloat($('#soilMinerals').val());
+                const soilCarbon = parseFloat($('#soilCarbon').val());
+                const effectivePorosity = parseFloat($('#effectivePorosity').val());
+                const basaltAmended = parseFloat($('#basaltAmended').val());
+                const heightTopsoil = parseFloat($('#heightTopsoil').val());
+
+                const airBlindPores = 1 - (soilMinerals + soilCarbon + effectivePorosity);
+                const volumeSoil = heightTopsoil * 10000; // Units conversion areas
+                const unitsConversionVol = volumeSoil * 1000; // m³ to liters
+                const litersPoreWater = unitsConversionVol * effectivePorosity;
+                const unitConversionTonsToKg = basaltAmended * 1000;
+                const basaltPerVol = unitConversionTonsToKg / unitsConversionVol;
+                const unitConversionKgToG = basaltPerVol * 1000;
+                const concentrationBasalt = unitConversionKgToG / effectivePorosity;
+
+                $('#airBlindPores').text((airBlindPores*100).toFixed(2) + '%');
+                $('#volumeSoil').text(volumeSoil.toFixed(2) +'  m³');
+                $('#litersPoreWater').text(litersPoreWater.toFixed(2) + ' L');
+                $('#basaltPerVol').text(basaltPerVol.toFixed(2) + ' kg/m³');
+                $('#concentrationBasalt').text(concentrationBasalt.toFixed(2) + ' g/L');
+            }
+
+            // Trigger calculation on any input change
+            $('input').on('input', calculateValues);
+
+            // Initial calculation
+            calculateValues();
+        });
+
+        // Step 2: TODO
+        /*
+            Total BET SA m^2/g
+            (a) One mineral (Component)
+                example: Pollyea & Rimstiat (2017)
+                --> PHREEQC Input File
+
+
+            Phase:
+                Basalt ...
+                ---
+            Kinetics:
+            *End result is the input file for PHREEQC*
+        */
+
+    </script>
+</body>
+
+</html>
