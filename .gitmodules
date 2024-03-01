@@ -1,0 +1,3 @@
+[submodule "PHREEQC_dataviz"]
+	path = PHREEQC_dataviz
+	url = git@github.com:Geochemical-Modeling/PHREEQC_dataviz.git
