@@ -1,95 +1,400 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Soil Calculation Tool</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Soil Calculation Tool</title>
+  <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- 
+ -->
+ <link
+  href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap"
+  rel="stylesheet" />
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/tw-elements/dist/css/tw-elements.min.css" />
+<script src="https://cdn.tailwindcss.com/3.3.0"></script>
+<script>
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      fontFamily: {
+        sans: ["Roboto", "sans-serif"],
+        body: ["Roboto", "sans-serif"],
+        mono: ["ui-monospace", "monospace"],
+      },
+    },
+    corePlugins: {
+      preflight: false,
+    },
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/tw-elements/dist/js/tw-elements.umd.min.js" defer></script>
+
 </head>
-
-<body class="bg-gray-100 font-sans">
-    <div class="min-h-screen flex items-center justify-center">
-        <div class="bg-white p-6 rounded-lg shadow-lg">
-            <h2 class="text-xl font-bold mb-4">Soil Calculation Tool</h2>
-
-            <div class="mb-4">
-                <label for="soilMinerals" class="block text-sm font-medium text-gray-700">Soil Minerals:</label>
-                <input type="number" id="soilMinerals" value="0.53" step="0.01" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-            </div>
-
-            <div class="mb-4">
-                <label for="soilCarbon" class="block text-sm font-medium text-gray-700">Soil Carbon:</label>
-                <input type="number" id="soilCarbon" value="0.02" step="0.01" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-            </div>
-
-            <div class="mb-4">
-                <label for="effectivePorosity" class="block text-sm font-medium text-gray-700">Effective Porosity:</label>
-                <input type="number" id="effectivePorosity" value="0.2" step="0.01" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-            </div>
-
-            <div class="mb-4">
-                <label for="basaltAmended" class="block text-sm font-medium text-gray-700">Basalt Amended (tons):</label>
-                <input type="number" id="basaltAmended" value="100" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-            </div>
-
-            <div class="mb-4">
-                <label for="heightTopsoil" class="block text-sm font-medium text-gray-700">Height of Topsoil Layer (m):</label>
-                <input type="number" id="heightTopsoil" value="0.25" step="0.01" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
-            </div>
-
-            <h3 class="text-lg font-semibold">Calculated Values</h3>
-            <div class="mt-2">Air and Blind Pores: <span id="airBlindPores" class="font-medium"></span></div>
-            <div>Volume of Soil/ha: <span id="volumeSoil" class="font-medium"></span></div>
-            <div>Liters of Pore Water per ha: <span id="litersPoreWater" class="font-medium"></span></div>
-            <div>Basalt per Vol of Soil: <span id="basaltPerVol" class="font-medium"></span></div>
-            <div>Concentration of Basalt: <span id="concentrationBasalt" class="font-medium"></span></div>
+<body class="bg-gray-100">
+  <div class="container mx-auto py-8">
+    <h1 class="text-4xl font-bold text-center mb-8">Soil Calculation Tool</h1>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div class="bg-white p-6 rounded-lg shadow-md md:h-[calc(50vh-10rem)] overflow-y-auto">
+        <h2 class="text-2xl font-bold mb-4">Soil Properties</h2>
+        <!-- Soil Properties inputs -->
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow-md h-auto md:h-[calc(50vh-10rem)] overflow-y-auto">
+        <button id="addMineralBtn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 ml-auto float-right">Add Mineral</button>
+        <h2 class="text-2xl font-bold mb-8">Basalt Mineral Makeup</h2>
+        <div id="mineralContainer" class="grid gap-4">
+          <!-- Mineral makeup containers will be added here -->
         </div>
+      </div>
     </div>
+    <div class="container mx-auto py-8">
+      <div class="grid grid-cols-1 md:grid-cols-1 gap-8">
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <h2 class="text-2xl font-bold mb-4">Calculated Values</h2>
+          <div id="calculatedValuesContainer">
+            <!-- Calculated values will be added here -->
+          </div>
+      </div>
+    <div class="mt-8 flex justify-center space-x-4">
+      <button id="generatePHREEQCBtn" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Generate PHREEQC File</button>
+      <button id="emailResultsBtn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Email Computed Results</button>
+      <button id="getOutputParamsBtn" class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">Get Output Parameters</button>
+  </div>
 
-    <script>
-        // Step 1:
-        $(document).ready(function () {
-            function calculateValues() {
-                const soilMinerals = parseFloat($('#soilMinerals').val());
-                const soilCarbon = parseFloat($('#soilCarbon').val());
-                const effectivePorosity = parseFloat($('#effectivePorosity').val());
-                const basaltAmended = parseFloat($('#basaltAmended').val());
-                const heightTopsoil = parseFloat($('#heightTopsoil').val());
+  <!-- Output Parameters Modal -->
+  <div id="outputParamsModal" class="fixed z-10 inset-0 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+      <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+      <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+      <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+          <div class="sm:flex sm:items-start">
+            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+              <div class="flex flex-col">
+                <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
+                  <div class="inline-block min-w-full py-2 sm:px-6 lg:px-8">
+                    <div class="overflow-hidden">
+                      <table
+                        class="min-w-full text-left text-sm font-light text-surface dark:text-white"
+                        id="outputParamTable">
+                        <thead
+                          class="border-b border-neutral-200 font-medium dark:border-white/10">
+                          <tr>
+                            <th scope="col" class="px-6 py-4">Mineral</th>
+                            <th scope="col" class="px-6 py-4">Weight</th>
+                            <th scope="col" class="px-6 py-4">Concentration for each mineral (mol/L)</th>
+                            <th scope="col" class="px-6 py-4">SA for each mineral (m²/L)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr class="border-b border-neutral-200 dark:border-white/10">
+                            <td class="whitespace-nowrap px-6 py-4">Mark</td>
+                            <td class="whitespace-nowrap px-6 py-4">Otto</td>
+                            <td class="whitespace-nowrap px-6 py-4">@mdo</td>
+                          </tr>
+                          <tr class="border-b border-neutral-200 dark:border-white/10">
+                            <td class="whitespace-nowrap px-6 py-4">Jacob</td>
+                            <td class="whitespace-nowrap px-6 py-4">Thornton</td>
+                            <td class="whitespace-nowrap px-6 py-4">@fat</td>
+                          </tr>
+                          <tr class="border-b border-neutral-200 dark:border-white/10">
+                            <td class="whitespace-nowrap px-6 py-4">Larry</td>
+                            <td class="whitespace-nowrap px-6 py-4">Wild</td>
+                            <td class="whitespace-nowrap px-6 py-4">@twitter</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+          <button id="closeModalBtn" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
-                const airBlindPores = 1 - (soilMinerals + soilCarbon + effectivePorosity);
-                const volumeSoil = heightTopsoil * 10000; // Units conversion areas
-                const unitsConversionVol = volumeSoil * 1000; // m³ to liters
-                const litersPoreWater = unitsConversionVol * effectivePorosity;
-                const unitConversionTonsToKg = basaltAmended * 1000;
-                const basaltPerVol = unitConversionTonsToKg / unitsConversionVol;
-                const unitConversionKgToG = basaltPerVol * 1000;
-                const concentrationBasalt = unitConversionKgToG / effectivePorosity;
+<!--  -->
 
-                $('#airBlindPores').text((airBlindPores*100).toFixed(2) + '%');
-                $('#volumeSoil').text(volumeSoil.toFixed(2) +'  m³');
-                $('#litersPoreWater').text(litersPoreWater.toFixed(2) + ' L');
-                $('#basaltPerVol').text(unitConversionKgToG.toFixed(2) + ' g/L');
-                $('#concentrationBasalt').text(concentrationBasalt.toFixed(2) + ' g/L');
-            }
+  <script>
+    let totalWeightPercentage = 0;
+    let TotalSA = 0;
+    let minerals = {
+      "Quartz": {"weight": 60.083, "density": 2.65, "SSA": 0.1},
+      "Plagioclase": {"weight": 270.0765, "density": 2.73, "SSA": 0.1},
+      "Apatite": {"weight": 462.229, "density": 3.2, "SSA": 0.1},
+      "Diopside_Mn": {"weight": 211.89213, "density": 2.1, "SSA": 0.1},
+      "Diopside": {"weight": 217.03085, "density": 3.278, "SSA": 0.1},
+      "Olivine": {"weight": 170.9699, "density": 3.3, "SSA": 0.1},
+      "Alkali-feldspar": {"weight": 269.30283, "density": 2.56, "SSA": 0.1},
+      "Montmorillonite": {"weight": 384.3548, "density": 2.5, "SSA": 0.1},
+      "Ilmenite": {"weight": 154.9002, "density": 4.79, "SSA": 0.1},
+      "Glass": {"weight": 98.87885, "density": 2.3, "SSA": 1.3}
+  }
 
-            // Trigger calculation on any input change
-            $('input').on('input', calculateValues);
+  let defaultBasaltMineralMakeup = {
+    'Quartz': 0.44,
+    'Plagioclase': 35.1,
+    'Apatite': 2.8,
+    'Diopside_Mn': 6.2,
+    'Diopside': 4.4,
+    'Olivine': 1.0,
+    'Alkali-feldspar': 23.0,
+    'Montmorillonite': 1.2,
+    'Ilmenite': 0.6,
+    'Glass': 24.9
+  }
 
-            // Initial calculation
-            calculateValues();
-        });
+    $(document).ready(function() {
+      populateSoilPropertiesInputs();
+    
+      $('#addMineralBtn').click(addMineralMakeupContainer);
+      $('#generatePHREEQCBtn').click(generatePHREEQCFile);
+      $('#emailResultsBtn').click(emailComputedResults);
+      $('#getOutputParamsBtn').click(showOutputParamsModal);
 
-        // Step 2: TODO
-        /*
-            Total BET SA m^2/g
-            (a) One mineral (Component)
-                example: Pollyea & Rimstiat (2017)
-                -> PHREEQC Input File
-        */
+      $('input').on('input', calculateValues);
+      $('#closeModalBtn').click(hideOutputParamsModal);
+      addDefaultBasaltMineralMakeup();
+      calculateValues();
+    });
 
-    </script>
+    function addDefaultBasaltMineralMakeup() {
+      // Add the default basalt mineral makeup
+      // Go through each of the default makeup and add it to the mineral container
+      Object.keys(defaultBasaltMineralMakeup).forEach(mineral => {
+        addMineralMakeupContainer();
+        const weight = defaultBasaltMineralMakeup[mineral];
+        const mineralContainers = $('#mineralContainer > div');
+        const lastContainer = mineralContainers[mineralContainers.length - 1];
+        $(lastContainer).find('select').val(mineral);
+        $(lastContainer).find('input[type="number"]').val(weight);
+      });
+      updateTotalWeightPercentage();
+    }
+    
+    function populateSoilPropertiesInputs() {
+      const soilPropertiesInputs = [
+        { id: 'soilMinerals', value: 0.53, title: 'Soil Minerals' },
+        { id: 'soilCarbon', value: 0.02, title: 'Soil Carbon' },
+        { id: 'effectivePorosity', value: 0.2, title: 'Effective Porosity' },
+        { id: 'totalSSA', value: 5.04, title: 'Total SSA' },
+        { id: 'heightTopsoil', value: 0.25, title: 'Height of Topsoil Layer' },
+        { id: 'basaltAmended', value: 100, title: 'Basalt Amended (Tons)' },
+        { id: 'basaltDensity', value: 2.81, title: 'Basalt Density (g/cm³)' },
+      ];
+    
+      const soilPropertiesContainer = $('.bg-white.p-6.rounded-lg.shadow-md')[0];
+    
+      soilPropertiesInputs.forEach(input => {
+        const inputGroup = document.createElement('div');
+        inputGroup.classList.add('mb-4');
+    
+        const label = document.createElement('label');
+        label.textContent = input.title
+        label.classList.add('block', 'text-gray-700', 'font-bold');
+    
+        const inputField = document.createElement('input');
+        inputField.type = 'number';
+        inputField.step = 0.01;
+        inputField.id = input.id;
+        inputField.value = input.value;
+        inputField.classList.add('shadow', 'appearance-none', 'border', 'rounded', 'w-full', 'py-2', 'px-3', 'text-gray-700', 'leading-tight', 'focus:outline-none', 'focus:shadow-outline');
+    
+        inputGroup.appendChild(label);
+        inputGroup.appendChild(inputField);
+    
+        soilPropertiesContainer.appendChild(inputGroup);
+      });
+    }
+    
+    function addMineralMakeupContainer() {
+      const mineralOptions = [
+        'Quartz',
+        'Plagioclase',
+        'Apatite',
+        'Diopside_Mn',
+        'Diopside',
+        'Olivine',
+        'Alkali-feldspar',
+        'Montmorillonite',
+        'Ilmenite',
+        'Glass'
+      ];
+    
+      const containerDiv = document.createElement('div');
+      containerDiv.classList.add('flex', 'items-center');
+    
+      const selectDiv = document.createElement('div');
+      const mineralSelect = document.createElement('select');
+      mineralSelect.classList.add('shadow', 'appearance-none', 'border', 'rounded', 'py-2', 'px-3', 'text-gray-700', 'leading-tight', 'focus:outline', 'focus:shadow-outline', 'mr-2', 'ml-auto'); // Added mr-2 for margin-right
+    
+      const defaultOption = document.createElement('option');
+      defaultOption.value = '';
+      defaultOption.textContent = 'Select Mineral';
+      mineralSelect.appendChild(defaultOption);
+    
+      mineralOptions.forEach(option => {
+        const optionElement = document.createElement('option');
+        optionElement.value = option;
+        optionElement.textContent = option;
+        mineralSelect.appendChild(optionElement);
+      });
+    
+      selectDiv.appendChild(mineralSelect);
+    
+      const weightDiv = document.createElement('div');
+      const weightInput = document.createElement('input');
+      weightInput.type = 'number';
+      weightInput.placeholder = 'Weight %';
+      weightInput.classList.add('shadow', 'appearance-none', 'border', 'rounded', 'py-2', 'px-3', 'text-gray-700', 'leading-tight', 'focus:outline-none', 'focus:shadow-outline', 'mr-2');
+      weightInput.step = 0.01;
+      weightInput.addEventListener('input', () => {
+        updateTotalWeightPercentage();
+      });
+    
+      weightDiv.appendChild(weightInput);
+    
+      const deleteBtn = document.createElement('button');
+      deleteBtn.textContent = 'Delete';
+      deleteBtn.classList.add('bg-red-500', 'hover:bg-red-700', 'text-white', 'font-bold', 'py-2', 'px-4', 'rounded', 'ml-auto');
+      deleteBtn.addEventListener('click', () => {
+        const weightValue = parseFloat(weightInput.value) || 0;
+        totalWeightPercentage -= weightValue;
+        containerDiv.remove();
+        calculateValues();
+      });
+    
+      containerDiv.appendChild(selectDiv);
+      containerDiv.appendChild(weightDiv);
+      containerDiv.appendChild(deleteBtn);
+    
+      const mineralContainer = document.getElementById('mineralContainer');
+      mineralContainer.appendChild(containerDiv);
+    }
+
+    function updateTotalWeightPercentage() {
+      totalWeightPercentage = 0;
+      const weightInputs = document.querySelectorAll('#mineralContainer input[type="number"]');
+      weightInputs.forEach(input => {
+        const value = parseFloat(input.value) || 0;
+        totalWeightPercentage += value;
+        calculateValues();
+      });
+    }
+    
+    function generatePHREEQCFile() {
+      // Code to generate PHREEQC file
+      console.log('Generating PHREEQC file...');
+    }
+    
+    function emailComputedResults() {
+      // Code to email computed results
+      console.log('Emailing computed results...');
+    }
+
+    function showOutputParamsModal() {
+      $('#outputParamsModal').show();
+      // Empty out the rows of the table
+      $('#outputParamTable').find('tr:gt(0)').remove();
+      
+
+      // Find the total SSA
+      let totalSSA = parseFloat($('#concentrationBasalt').text())*$('#totalSSA').val();
+      console.log(totalSSA)
+
+      // Add the minerals and weights
+      const mineralContainers = $('#mineralContainer > div');
+      mineralContainers.each((index, container) => {
+        const mineral = $(container).find('select').val();
+        const weight = $(container).find('input[type="number"]').val() / 100;
+        const basaltDensity = parseFloat($('#basaltDensity').val());
+        const SSA = minerals[mineral].SSA;
+        const density = minerals[mineral].density;
+        const rockSSA = parseFloat($('#rockSSA').text());
+        console.log(mineral, (Math.pow(weight/density*basaltDensity, 2/3)*SSA), weight, density, basaltDensity, SSA, totalSSA)
+        const row = `<tr class="border-b border-neutral-200 dark:border-white/10">
+          <td class="whitespace-nowrap px-6 py-4">${mineral}</td>
+          <td class="whitespace-nowrap px-6 py-4">${weight.toFixed(4)}%</td>
+          <td class="whitespace-nowrap px-6 py-4">${((weight/minerals[mineral]['weight'])*parseFloat($('#concentrationBasalt').text())).toFixed(4)}</td>
+          <td class="whitespace-nowrap px-6 py-4">${(((Math.pow(weight/density*basaltDensity, 2/3)*SSA)/rockSSA)*totalSSA).toFixed(4)}</td>
+        </tr>`;
+        $('#outputParamTable').append(row);
+      });
+    }
+
+    function hideOutputParamsModal() {
+      $('#outputParamsModal').hide();
+    }
+
+    function calculateValues() {
+      // Clear the table
+      $('#calculatedValuesContainer').empty();
+
+      const soilMinerals = parseFloat($('#soilMinerals').val());
+      const soilCarbon = parseFloat($('#soilCarbon').val());
+      const effectivePorosity = parseFloat($('#effectivePorosity').val());
+      const basaltAmended = parseFloat($('#basaltAmended').val());
+      const heightTopsoil = parseFloat($('#heightTopsoil').val());
+
+      const airBlindPores = 1 - (soilMinerals + soilCarbon + effectivePorosity);
+      const volumeSoil = heightTopsoil * 10000; // Units conversion areas
+      const unitsConversionVol = volumeSoil * 1000; // m³ to liters
+      const litersPoreWater = unitsConversionVol * effectivePorosity;
+      const unitConversionTonsToKg = basaltAmended * 1000;
+      const basaltPerVol = unitConversionTonsToKg / unitsConversionVol;
+      const unitConversionKgToG = basaltPerVol * 1000;
+      const concentrationBasalt = unitConversionKgToG / effectivePorosity;
+
+      // Calculate the Rock SSA
+      let rockSSA = 0;
+      const mineralContainers = $('#mineralContainer > div');
+      mineralContainers.each((index, container) => {
+        if (!minerals[$(container).find('select').val()]) return;
+        const mineral = $(container).find('select').val();
+        const weight = $(container).find('input[type="number"]').val() / 100;
+        const basaltDensity = parseFloat($('#basaltDensity').val());
+        const SSA = minerals[mineral].SSA;
+        const density = minerals[mineral].density;
+        rockSSA += (Math.pow(weight/density*basaltDensity, 2/3)*SSA);
+      });
+      console.log(rockSSA)
+
+      // Add output parameters to the table
+      const outputParams = [
+        { id: 'airBlindPores', name: 'Air and Blind Pores', value: (airBlindPores*100).toFixed(2) + '%' },
+        { id: 'volSoilHA', name: 'Volume of Soil per Hectare', value: volumeSoil.toFixed(2) +'  m³' },
+        { id: 'LiterWaterHA', name: 'Liters of Pore Water per Hectare', value: litersPoreWater.toFixed(2) + ' L' },
+        { id: 'basaltVolSoil', name: 'Basalt Per Volume of Soil', value: unitConversionKgToG.toFixed(2) + ' g/L' },
+        { id: 'concentrationBasalt', name: 'Concentration of Basalt', value: concentrationBasalt.toFixed(2) + ' g/L' },
+        { id: 'totalWeight', name: 'Total Weight Percentage', value: totalWeightPercentage.toFixed(2) + '%' },
+        { id: 'rockSSA', name: 'Rock SSA', value: rockSSA.toFixed(5) + ' m²/L' }
+      ];
+
+      outputParams.forEach(param => {
+        const div = document.createElement('div');
+        div.classList.add('flex', 'justify-between', 'items-center', 'mb-2');
+    
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = param.name;
+    
+        const valueSpan = document.createElement('span');
+        valueSpan.textContent = param.value;
+        valueSpan.classList.add('font-medium');
+        valueSpan.id = param.id;
+    
+        div.appendChild(nameSpan);
+        div.appendChild(valueSpan);
+    
+        calculatedValuesContainer.appendChild(div);
+      });
+    }
+  </script>
 </body>
-
 </html>
