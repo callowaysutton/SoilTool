@@ -6,8 +6,6 @@
   <title>Soil Calculation Tool</title>
   <!-- <script src="https://cdn.tailwindcss.com"></script> -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- 
- -->
  <link
   href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap"
   rel="stylesheet" />
@@ -58,9 +56,9 @@
           </div>
       </div>
     <div class="mt-8 flex justify-center space-x-4">
-      <button id="generatePHREEQCBtn" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Generate PHREEQC File</button>
-      <button id="emailResultsBtn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Email Computed Results</button>
-      <button id="getOutputParamsBtn" class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded">Get Output Parameters</button>
+      <button id="generatePHREEQCBtn" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Generate Kinetics Block</button>
+      <button id="getOutputParamsBtn" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Get Output Parameters</button>
+      <button id="emailResultsBtn" class="bg-indigo-500 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded" onclick="window.open('https://visual.ear180013.projects.jetstream-cloud.org/','_blank');">Run Simulation</button>
   </div>
 
   <!-- Output Parameters Modal -->
@@ -83,26 +81,19 @@
                           class="border-b border-neutral-200 font-medium dark:border-white/10">
                           <tr>
                             <th scope="col" class="px-6 py-4">Mineral</th>
-                            <th scope="col" class="px-6 py-4">Weight</th>
                             <th scope="col" class="px-6 py-4">Concentration for each mineral (mol/L)</th>
                             <th scope="col" class="px-6 py-4">SA for each mineral (m²/L)</th>
                           </tr>
                         </thead>
                         <tbody>
                           <tr class="border-b border-neutral-200 dark:border-white/10">
-                            <td class="whitespace-nowrap px-6 py-4">Mark</td>
-                            <td class="whitespace-nowrap px-6 py-4">Otto</td>
-                            <td class="whitespace-nowrap px-6 py-4">@mdo</td>
+                            <!-- Minerals -->
                           </tr>
                           <tr class="border-b border-neutral-200 dark:border-white/10">
-                            <td class="whitespace-nowrap px-6 py-4">Jacob</td>
-                            <td class="whitespace-nowrap px-6 py-4">Thornton</td>
-                            <td class="whitespace-nowrap px-6 py-4">@fat</td>
+                            <!-- Concentration -->
                           </tr>
                           <tr class="border-b border-neutral-200 dark:border-white/10">
-                            <td class="whitespace-nowrap px-6 py-4">Larry</td>
-                            <td class="whitespace-nowrap px-6 py-4">Wild</td>
-                            <td class="whitespace-nowrap px-6 py-4">@twitter</td>
+                            <!-- SA -->
                           </tr>
                         </tbody>
                       </table>
@@ -114,13 +105,38 @@
           </div>
         </div>
         <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-          <button id="closeModalBtn" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">Close</button>
+          <button onclick="$('#outputParamsModal').toggle('.hidden')" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">Close</button>
+          <button id="exportBtn" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">Export to CSV</button>
         </div>
       </div>
     </div>
   </div>
 
 <!--  -->
+
+<!-- Kinetics Block Modal -->
+<div id="kineticsBlockModal" class="fixed z-10 inset-0 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+  <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+    <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+    <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+    <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+      <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <div class="sm:flex sm:items-start">
+          <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+            <div class="flex flex-col max-h-96 overflow-y-auto">
+              <pre class="bg-gray-800 rounded-md p-4 text-white w-full"><code class="language-bash" id="codeBlock">Kinetics ... 
+-tol	1e-008"</code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+        <button onclick="$('#kineticsBlockModal').toggle('.hidden')" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">Close</button>
+        <button id="copyCodeBtn" class="mt-2 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">Copy Code</button>
+      </div>
+    </div>
+  </div>
+</div>
 
   <script>
     let totalWeightPercentage = 0;
@@ -160,7 +176,6 @@
       $('#getOutputParamsBtn').click(showOutputParamsModal);
 
       $('input').on('input', calculateValues);
-      $('#closeModalBtn').click(hideOutputParamsModal);
       addDefaultBasaltMineralMakeup();
       calculateValues();
     });
@@ -288,11 +303,72 @@
         calculateValues();
       });
     }
+
+// Alternatively, you can use async/await with setTimeout
+async function wait(ms) {
+  await new Promise(resolve => setTimeout(resolve, ms));
+  console.log(`Waited for ${ms} milliseconds.`);
+}
+
+
     
     function generatePHREEQCFile() {
       // Code to generate PHREEQC file
       console.log('Generating PHREEQC file...');
+      $('#kineticsBlockModal').toggle('.hidden');
+      // Append "Kinetics\n" to the code block
+      const codeBlock = document.getElementById('codeBlock');
+      codeBlock.textContent = '';
+      // codeBlock.textContent += 'Kinetics\n';
+
+      
+      processContainer(0);
     }
+
+
+    function processContainer(index) {
+      const mineralContainers = $('#mineralContainer > div');
+
+      if (index >= mineralContainers.length) return; // Exit condition
+      const totalSSA = parseFloat($('#totalSSA').val());
+      const container = mineralContainers[index];
+      const mineral = $(container).find('select').val();
+      const weight = $(container).find('input[type="number"]').val() / 100;
+      const basaltDensity = parseFloat($('#basaltDensity').val());
+      const SSA = minerals[mineral].SSA;
+      const density = minerals[mineral].density;
+      const rockSSA = parseFloat($('#rockSSA').text());
+      const concentrationMineral = ((weight / minerals[mineral]['weight']) * parseFloat($('#concentrationBasalt').text())).toFixed(4);
+      const mineralSA = (((Math.pow(weight / density * basaltDensity, 2 / 3) * SSA) / rockSSA) * totalSSA).toFixed(4);
+    
+      // Split the content into lines
+      const content = `${mineral}\n\t-m0 ${concentrationMineral}\n\t-parms ${mineralSA} 1.0 1.0 1.0 1.0\n\t-tol 1e-008\n`.split('\n');
+    
+      // Function to add each line with a delay
+      function addLineWithDelay(lineIndex) {
+        if (lineIndex >= content.length) {
+          // Process next container after 1000 milliseconds
+          setTimeout(() => {
+            processContainer(index + 1);
+          }, 10);
+          return;
+        }
+    
+        codeBlock.textContent += content[lineIndex] + '\n';
+    
+        // Add the next line with a delay
+        setTimeout(() => {
+          addLineWithDelay(lineIndex + 1);
+        }, 10);
+      }
+    
+      // Start adding lines with a delay
+      addLineWithDelay(0);
+    }
+    
+    // Start processing containers from the first one
+    processContainer(0);
+    
     
     function emailComputedResults() {
       // Code to email computed results
@@ -300,15 +376,16 @@
     }
 
     function showOutputParamsModal() {
-      $('#outputParamsModal').show();
+      $('#outputParamsModal').toggle('.hidden');
       // Empty out the rows of the table
       $('#outputParamTable').find('tr:gt(0)').remove();
-      
-
+    
       // Find the total SSA
-      let totalSSA = parseFloat($('#concentrationBasalt').text())*$('#totalSSA').val();
-      console.log(totalSSA)
-
+      let totalSSA = parseFloat($('#concentrationBasalt').text()) * $('#totalSSA').val();
+    
+      // Prepare an array to store the table data
+      const tableData = [['Mineral', 'Concentration (mg/g)', 'SSA (m^2/g)']];
+    
       // Add the minerals and weights
       const mineralContainers = $('#mineralContainer > div');
       mineralContainers.each((index, container) => {
@@ -318,19 +395,31 @@
         const SSA = minerals[mineral].SSA;
         const density = minerals[mineral].density;
         const rockSSA = parseFloat($('#rockSSA').text());
-        console.log(mineral, (Math.pow(weight/density*basaltDensity, 2/3)*SSA), weight, density, basaltDensity, SSA, totalSSA)
+    
         const row = `<tr class="border-b border-neutral-200 dark:border-white/10">
           <td class="whitespace-nowrap px-6 py-4">${mineral}</td>
-          <td class="whitespace-nowrap px-6 py-4">${weight.toFixed(4)}%</td>
-          <td class="whitespace-nowrap px-6 py-4">${((weight/minerals[mineral]['weight'])*parseFloat($('#concentrationBasalt').text())).toFixed(4)}</td>
-          <td class="whitespace-nowrap px-6 py-4">${(((Math.pow(weight/density*basaltDensity, 2/3)*SSA)/rockSSA)*totalSSA).toFixed(4)}</td>
+          <td class="whitespace-nowrap px-6 py-4">${((weight / minerals[mineral]['weight']) * parseFloat($('#concentrationBasalt').text())).toFixed(4)}</td>
+          <td class="whitespace-nowrap px-6 py-4">${(((Math.pow(weight / density * basaltDensity, 2 / 3) * SSA) / rockSSA) * totalSSA).toFixed(4)}</td>
         </tr>`;
         $('#outputParamTable').append(row);
+    
+        // Add the row data to the tableData array
+        tableData.push([mineral, ((weight / minerals[mineral]['weight']) * parseFloat($('#concentrationBasalt').text())).toFixed(4), (((Math.pow(weight / density * basaltDensity, 2 / 3) * SSA) / rockSSA) * totalSSA).toFixed(4)]);
       });
-    }
-
-    function hideOutputParamsModal() {
-      $('#outputParamsModal').hide();
+    
+      // Create a CSV string from the tableData array
+      const csvData = tableData.map(row => row.join(',')).join('\n');
+    
+      // Create the export button and append it to the modal footer
+      const exportButton = $('#exportBtn');
+      exportButton.on('click', () => {
+        const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.setAttribute('href', url);
+        a.setAttribute('download', 'table_data.csv');
+        a.click();
+      });
     }
 
     function calculateValues() {
@@ -395,6 +484,36 @@
         calculatedValuesContainer.appendChild(div);
       });
     }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      var copyCodeBtn = document.getElementById('copyCodeBtn');
+      var codeBlock = document.querySelector('pre code');
+    
+      copyCodeBtn.addEventListener('click', function() {
+        var codeText = codeBlock.innerText;
+        copyTextToClipboard(codeText);
+      });
+    
+      function copyTextToClipboard(text) {
+        var textArea = document.createElement('textarea');
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+    
+        try {
+          var successful = document.execCommand('copy');
+          if (successful) {
+            console.info('Code copied to clipboard.');
+          } else {
+            console.error('Failed to copy code to clipboard...');
+          }
+        } catch (err) {
+          console.error('Failed to copy code to clipboard.');
+        }
+    
+        document.body.removeChild(textArea);
+      }
+    });
   </script>
 </body>
 </html>
